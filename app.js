@@ -1,18 +1,27 @@
 const express = require("express");
-const { validate } = require("express-validation");
 const {ErrorHandler, NotFoundError} = require("./util/errorHandler");
-const { loginValidation, registerValidation } = require("./validators/auth.validator");
+const {loginValidationSchema,registerValidationSchema} = require("./validators/auth.validator")
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
-app.post("/login", validate(loginValidation),(req,res) => {
-    res.send(req.body)
+app.post("/login",async(req,res,next) => {
+    try {
+        await loginValidationSchema.validateAsync(req.body);
+        res.send(req.body)
+    } catch (error) {
+        next(error)
+    }
 })
 
-app.post("/register", validate(registerValidation),(req,res) => {
-    res.send(req.body)
+app.post("/register", async(req,res,next) => {
+    try {
+        await registerValidationSchema.validateAsync(req.body);
+        res.send(req.body);
+    } catch (error) {
+        next(error);
+    }
 })
 
 app.use(NotFoundError)

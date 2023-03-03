@@ -1,4 +1,4 @@
-const { validationMapper } = require("../validators/express-validation-mapper");
+const { JoiValidationMapper } = require("./express-validation-mapper");
 
 const NotFoundError = (req,res,next) => {
     return res.status(404).json({
@@ -13,10 +13,10 @@ const NotFoundError = (req,res,next) => {
 const ErrorHandler = (err,req,res,next) => {
     console.log(JSON.stringify(err,null,4));
     return res.json({
-        statusCode:  err.status || err.statusCode || 500,
+        statusCode:  err.status || 500,
         error: {
-            message: err.message || "Internal Server Error",
-            invalidParams: validationMapper(err)
+            message: err.message?.replace(/[\"\'\\]*/g, '') || "Internal Server Error",
+            // invalidParams: JoiValidationMapper(err)
         }
     })
 }
